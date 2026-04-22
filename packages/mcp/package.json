@@ -16,7 +16,13 @@
     "@hypha/core": "workspace:*",
     "@hypha/store-sqlite": "workspace:*",
     "@hypha/governance": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@hypha/adapter-sdk": "workspace:*",
+    "@hypha/adapter-gmail-mbox": "workspace:*",
+    "@hypha/inferrer-sdk": "workspace:*",
+    "@hypha/inferrer-identity-resolver": "workspace:*"
   }
 }

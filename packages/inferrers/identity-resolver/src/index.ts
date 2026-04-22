@@ -23,7 +23,6 @@
 
 import { defineInferrer } from '@hypha/inferrer-sdk';
 import {
-  edgeId,
   inputsHash,
   now,
   nodeIdFromExternal,
@@ -105,8 +104,10 @@ export const identityResolver = defineInferrer({
           const pair = [a.node.id, b.node.id].sort() as [NodeId, NodeId];
           const hash = inputsHash(INFERRER_ID, pair);
           const needsReview = score.confidence < MATCH_THRESHOLD;
+          // Edge id is stable across runs: derived from the pair, not from
+          // the run's `at`. Otherwise re-runs produce duplicate edges.
           const edge: Edge = {
-            id: edgeId('identity.same_as', pair[0], pair[1], at) as Edge['id'],
+            id: `${INFERRER_ID}:identity.same_as:${hash.slice(0, 16)}` as Edge['id'],
             kind: 'identity.same_as',
             from_id: pair[0],
             to_id: pair[1],
