@@ -1,8 +1,10 @@
 /**
  * @hypha/inferrer-sdk — author Hypha inferrers.
  *
- * Lands in W5-6 alongside identity-resolver. For now we re-export the core
- * inferrer contract so authors can start sketching.
+ * Public surface:
+ *   - defineInferrer(opts)   : build an Inferrer
+ *   - runInferrer(opts)      : run one inferrer + write facts
+ *   - runInferrers(opts)     : topologically sort + run a group
  */
 
 export type {
@@ -18,3 +20,12 @@ export type {
   Locality,
   Reasoner,
 } from '@hypha/core';
+
+export { defineInferrer } from './define.ts';
+export type { DefineInferrerOptions } from './define.ts';
+export { runInferrer, runInferrers } from './runtime.ts';
+export type {
+  RunInferrerOptions,
+  RunInferrerResult,
+  RunInferrersOptions,
+} from './runtime.ts';
