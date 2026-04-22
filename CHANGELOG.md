@@ -4,7 +4,20 @@ All notable changes to Hypha are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Hypha adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.0-alpha] — 2026-04-22
+
+First tagged release. The core is end-to-end wired; several adapters and the web UI are deferred (see below). Production-ready as a library; developers welcome.
+
+### Added — W13-14 polish + launch
+- Polished `README.md` with quick-start, Claude Desktop integration config, explicit deferred scope, architecture ASCII.
+- `hypha.config.example.ts` — instance-level configuration shape (owner, storage mode, governance profile, LLM/embedder profile, MCP transports).
+- `evals/` scaffold with a README pointing at LongMemEval subset + synthetic Takeout benchmark (implementation in v1.x).
+- Blog post draft `docs/blog-dogsheep-for-ai-agents.md` — ready to publish.
+
+### Added — W11-12 ask(NL) + publish + Graphiti interchange
+- `ask` MCP tool (7th tool, under the ≤7 cap): compiles natural-language questions via Claude Haiku when `ANTHROPIC_API_KEY` is set; falls back to plain FTS text search otherwise. Compiled query always surfaces in `structuredContent` so agents and humans see what Hypha actually asked — never "the LLM made it up."
+- `hypha publish [--port]` — read-only HTTP server (Elysia) mirroring the MCP surface as JSON: `/search`, `/node/:id` (with 1-hop neighborhood), `/node/:id/why`, `/timeline`. Stable permalinks.
+- `hypha export --format graphiti --out FILE` and `hypha import --format graphiti --in FILE` — round-trips between Hypha and Graphiti's node/edge JSON schema, mapping four-timestamp provenance to `t_valid`/`t_invalid`/`t_created`/`t_expired`. End-to-end verified: 12 nodes + 12 edges export ↔ re-import with zero data loss.
 
 ### Added — W9-10 adapters + inferrers (partial)
 - `@hypha/adapter-google-drive-folder`: recursive directory walk with MIME-typed file kinds (file.document / file.image / file.other), emits folder tree + `contained_in` edges. Works for any local folder — a generalization of Drive export unpack.
