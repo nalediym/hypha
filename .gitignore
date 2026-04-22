@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+bun.lock
+
+# Build output
+dist/
+build/
+.next/
+*.tsbuildinfo
+
+# Test + coverage
+coverage/
+.nyc_output/
+
+# Local data + secrets
+.env
+.env.local
+.env.*.local
+.hypha/
+user-space/
+.tmp/
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+.claude/settings.local.json
+
+# Swift build artifacts
+.build/
+Package.resolved
+native/*/.build/
