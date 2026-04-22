@@ -155,8 +155,71 @@ export class SQLiteStore implements Store {
     return row ? rowToStoredEdge(row) : null;
   }
 
-  // TODO(W7-8): search, neighborhood, timeline, why, scan
-  async search(): Promise<never> { throw notImpl('search'); }
+  /**
+   * MVP search: FTS5 only. Accepts a text query, optional kind filter, and
+   * limit. Returns node hits with FTS5 rank as the score. No vector search
+   * yet — that lands in W7-8 alongside hybrid ranking + pagination cursors.
+   */
+  async search(q: {
+    text?: string;
+    kinds?: readonly string[];
+    limit?: number;
+    include_inferred?: boolean;
+    needs_review?: boolean;
+  }): Promise<{
+    hits: Array<{ node: StoredNode; score: number; highlights?: string[] }>;
+  }> {
+    const limit = q.limit ?? 20;
+    const includeInferred = q.include_inferred ?? true;
+    const kindFilter = q.kinds && q.kinds.length > 0
+      ? ` AND r.kind IN (${q.kinds.map(() => '?').join(',')})`
+      : '';
+    const provFilter = includeInferred ? '' : ` AND r.provenance_kind = 'ingested'`;
+    const reviewFilter = q.needs_review ? ` AND r.needs_review = 1` : '';
+
+    const params: unknown[] = [];
+    let sql: string;
+    if (q.text && q.text.trim().length > 0) {
+      sql = `
+        SELECT r.*, bm25(records_fts) AS score
+        FROM records_fts
+        JOIN records r ON r.id = records_fts.id
+        WHERE records_fts MATCH ?
+          AND r.record_type = 'node'
+          AND r.tx_invalidated IS NULL
+          ${kindFilter}
+          ${provFilter}
+          ${reviewFilter}
+        ORDER BY score
+        LIMIT ?
+      `;
+      params.push(fts5Query(q.text));
+      if (q.kinds) params.push(...q.kinds);
+      params.push(limit);
+    } else {
+      sql = `
+        SELECT r.*, 1.0 AS score
+        FROM records r
+        WHERE r.record_type = 'node'
+          AND r.tx_invalidated IS NULL
+          ${kindFilter}
+          ${provFilter}
+          ${reviewFilter}
+        ORDER BY r.tx_created DESC
+        LIMIT ?
+      `;
+      if (q.kinds) params.push(...q.kinds);
+      params.push(limit);
+    }
+
+    const rows = this.#db.query(sql).all(...(params as [])) as (RecordRow & { score: number })[];
+    return {
+      hits: rows.map((row) => ({
+        node: rowToStoredNode(row),
+        score: row.score,
+      })),
+    };
+  }
   async neighborhood(): Promise<never> { throw notImpl('neighborhood'); }
   async timeline(): Promise<never> { throw notImpl('timeline'); }
   async why(): Promise<never> { throw notImpl('why'); }
@@ -410,4 +473,18 @@ function provenanceToParams(p: UpsertNode['provenance']): Record<string, unknown
 
 function notImpl(method: string): Error {
   return new Error(`SQLiteStore.${method} not implemented — lands in W7-8 alongside MCP tools`);
+}
+
+/**
+ * Sanitize a user query for FTS5 MATCH. FTS5 treats certain tokens as
+ * operators — leaving them raw gives users terrible UX on queries with
+ * apostrophes, hyphens, or common ops words. We quote each term and join
+ * with AND to give OR-default-AND semantics without surprises.
+ */
+function fts5Query(raw: string): string {
+  const terms = raw
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((t) => `"${t.replace(/"/g, '""')}"`);
+  return terms.length > 0 ? terms.join(' ') : '""';
 }
