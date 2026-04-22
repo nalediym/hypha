@@ -31,6 +31,7 @@ import {
   whyTool,
   type HyphaToolContext,
 } from './tools.ts';
+import { AskInput, AskOutput, askTool } from './ask.ts';
 
 export interface HyphaServerOptions {
   dbPath: string;
@@ -155,6 +156,25 @@ export function createHyphaMcpServer(opts: HyphaServerOptions): {
     async (args) => {
       const out = await fetchTool(ctx, args);
       return asToolResult(out, `${out.kind} ${args.uri}`);
+    },
+  );
+
+  server.registerTool(
+    'ask',
+    {
+      title: 'Ask (natural language)',
+      description:
+        'Compile a natural-language question into a structured search. If ANTHROPIC_API_KEY is set, Claude Haiku compiles the query; otherwise the question is used as a plain FTS text query. The compiled query is always returned in structuredContent so the agent sees exactly what Hypha asked for.',
+      inputSchema: AskInput.shape,
+      outputSchema: AskOutput.shape,
+      annotations: { readOnlyHint: true, idempotentHint: false, openWorldHint: false },
+    },
+    async (args) => {
+      const out = await askTool(ctx, args);
+      return asToolResult(
+        out,
+        `${out.hits.length} hits via ${out.compiler}: ${JSON.stringify(out.compiled_query)}`,
+      );
     },
   );
 
