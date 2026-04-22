@@ -1,0 +1,35 @@
+id: google-drive-folder
+version: 0.1.0
+name: "Google Drive folder (local mirror)"
+description: "Recursively walks a local directory, emitting file + folder nodes and parent/child edges. Works with any extracted Drive export or arbitrary local folder."
+
+emits:
+  kinds:
+    - kind: folder
+      facet_schema_version: 1
+      id_strategy: content_addressed
+    - kind: file.document
+      facet_schema_version: 1
+      id_strategy: content_addressed
+    - kind: file.image
+      facet_schema_version: 1
+      id_strategy: content_addressed
+    - kind: file.other
+      facet_schema_version: 1
+      id_strategy: content_addressed
+  edges:
+    - contained_in
+
+capabilities:
+  ingest_modes: [full]
+  bounded: true
+  emits_content_addressed_ids: true
+  supports_corrections: true
+  supports_dry_run: true
+  idempotent: true
+
+inputs:
+  - name: folder_path
+    type: path
+    required: true
+    description: "Path to the folder to ingest (the root becomes a folder node)."
