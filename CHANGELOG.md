@@ -6,6 +6,20 @@ Hypha adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added — W9-10 adapters + inferrers (partial)
+- `@hypha/adapter-google-drive-folder`: recursive directory walk with MIME-typed file kinds (file.document / file.image / file.other), emits folder tree + `contained_in` edges. Works for any local folder — a generalization of Drive export unpack.
+- `@hypha/inferrer-dlp-scanner`: regex-based DLP/PII pre-pass. Validated patterns for SSN, email, US phone, Luhn-checked credit cards, ABA-validated US bank routing, IBAN, labeled DOB. Emits `dlp.finding` nodes linked to their source via `dlp_finding_for` edges. No matched substring stored — offsets + kind only, to avoid making findings their own PII vector.
+- Registered both in the CLI: `hypha ingest google-drive-folder <path>` + `hypha infer dlp-scanner`.
+- 9 new tests pass (adapter contract + regex patterns + E2E inferrer idempotency).
+
+### Explicitly deferred (not in v1-B)
+- `google-takeout` meta-adapter (multi-format routing: mbox, iCal, vCard, JSON).
+- `slack-export` adapter (ZIP walk + JSON-per-channel-per-day).
+- `microsoft-365-export` adapter (PST/OST via libpff FFI).
+- `notion-export` adapter (markdown + CSV walk).
+- `community-summarizer` inferrer (Leiden clustering + LLM summaries — needs Reasoner plumbing).
+- `memify` inferrer (usage-based salience — needs audit-log reader extension on the Store interface).
+
 ### Added — W7-8 MCP surface + governance
 - `@hypha/mcp`: full MCP server with six intent-shaped tools (`search`, `neighborhood`, `timeline`, `why`, `fetch`, `record`), two resource templates (`hypha://node/{id}`, `hypha://edge/{id}`), and one prompt (`/hypha:weekly-digest`). Tool annotations (`readOnlyHint`, `idempotentHint`, `openWorldHint`) set correctly. All tools return `structuredContent` with `instance_id` + inline provenance.
 - `@hypha/governance`: `AuditLog` (SQLite `audit` table writer with `pii_kinds_seen`), `AllowAllPolicy` + `OwnerOnlyPolicy` stubs behind a `PolicyEngine` interface. Cedar binding deferred until the Rust crate has stable Bun bindings.
