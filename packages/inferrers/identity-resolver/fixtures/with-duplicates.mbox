@@ -1,0 +1,42 @@
+From MAILER-DAEMON Fri Jul 14 14:03:11 2023
+From: Naledi Kekana <naledi@gmail.com>
+To: mom@example.com
+Subject: Dinner
+Date: Fri, 14 Jul 2023 14:03:11 -0400
+Message-ID: <dup-m1@gmail.com>
+X-Gm-THRID: thread-1
+
+hi mom
+
+From MAILER-DAEMON Mon Jul 17 09:22:18 2023
+From: Naledi Kekana <naledi@uncommonschools.org>
+To: boss@uncommonschools.org
+Subject: Project update
+Date: Mon, 17 Jul 2023 09:22:18 -0400
+Message-ID: <dup-m2@uncommonschools.org>
+X-Gm-THRID: thread-2
+
+update attached
+
+From MAILER-DAEMON Mon Jul 17 10:15:00 2023
+From: boss@uncommonschools.org
+To: Naledi Kekana <naledi@uncommonschools.org>
+Cc: naledi@gmail.com
+Subject: Re: Project update
+Date: Mon, 17 Jul 2023 10:15:00 -0400
+Message-ID: <dup-m3@uncommonschools.org>
+In-Reply-To: <dup-m2@uncommonschools.org>
+X-Gm-THRID: thread-2
+
+thanks, cc'ing your personal address too
+
+From MAILER-DAEMON Tue Jul 18 16:00:00 2023
+From: mom@example.com
+To: Naledi Kekana <naledi@gmail.com>
+Subject: Re: Dinner
+Date: Tue, 18 Jul 2023 16:00:00 -0400
+Message-ID: <dup-m4@example.com>
+In-Reply-To: <dup-m1@gmail.com>
+X-Gm-THRID: thread-1
+
+7 works!
