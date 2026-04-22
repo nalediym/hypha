@@ -6,6 +6,14 @@ Hypha adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added — W3-4 adapter SDK + gmail-mbox
+- `@hypha/adapter-sdk`: `defineAdapter()`, `runAdapter()`, `loadManifest`/`parseManifest` (Zod-validated YAML), `assertAdapterContract()` with six assertions (id-stability, idempotent-ingest, capabilities-match-behavior, edge-kinds-declared, facets-validate, emits-match-manifest).
+- `@hypha/adapter-gmail-mbox`: streaming mbox parser, Zod facet schemas for `gmail.message`/`gmail.thread`/`identity.email`, emits `sent_to`/`cc`/`bcc`/`part_of_thread`/`replied_to` edges. Content-addressed message ids make re-ingest idempotent.
+- `@hypha/cli`: `hypha ingest <adapter> <path>`, `hypha search <query>` (FTS5-only MVP), `hypha build-adapter <pkg-dir>`. `parseArgs`-based; no dep on commander/yargs.
+- `@hypha/store-sqlite`: basic FTS5-backed `search()` with kind + provenance + review filters (vector search lands in W7-8).
+- gmail-mbox contract test passes all 6 assertions over `fixtures/small.mbox`.
+- E2E verified: `bun run hypha ingest gmail-mbox fixtures/small.mbox` → 11 nodes + 9 edges; `bun run hypha search dinner` → 3 cited hits; re-ingest skips all 20 records.
+
 ### Added — W1-2 scaffold
 - Bun workspace monorepo (Apache-2.0, TS strict + ESM).
 - `@hypha/core`: Node + Edge + Provenance types, bitemporal quartet, Store interface, Adapter + Inferrer contracts, id + time helpers.

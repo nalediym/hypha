@@ -1,8 +1,11 @@
 /**
  * @hypha/adapter-sdk — author Hypha adapters.
  *
- * Lands in W3-4 alongside the gmail-mbox adapter. For now we re-export the
- * core adapter contract so authors can start sketching.
+ * Public surface:
+ *   - defineAdapter(opts)   : build a HyphaAdapter with YAML-manifest + Zod facets
+ *   - runAdapter(opts)      : consume an adapter's event stream and write to a Store
+ *   - assertAdapterContract : six-assertion contract test every adapter must pass
+ *   - loadManifest / parseManifest : YAML loader + validator
  */
 
 export type {
@@ -19,3 +22,11 @@ export type {
   HttpClient,
   HyphaAdapter,
 } from '@hypha/core';
+
+export { defineAdapter } from './define.ts';
+export type { DefineAdapterOptions } from './define.ts';
+
+export { runAdapter } from './runtime.ts';
+export type { RunAdapterOptions, RunAdapterResult } from './runtime.ts';
+
+export { loadManifest, parseManifest, ManifestSchema } from './manifest.ts';
