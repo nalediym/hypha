@@ -1,0 +1,22 @@
+{
+  "name": "@hypha/server",
+  "version": "0.1.0-dev",
+  "description": "Hypha REST server (Elysia) — mirrors the MCP surface for non-MCP consumers and the web UI.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "bin": { "hypha-server": "./src/bin.ts" },
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "dev": "bun --watch src/bin.ts",
+    "build": "bun build src/bin.ts --outdir dist --target bun",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hypha/core": "workspace:*",
+    "@hypha/store-sqlite": "workspace:*",
+    "@hypha/governance": "workspace:*",
+    "elysia": "^1.1.0"
+  }
+}

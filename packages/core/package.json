@@ -1,0 +1,25 @@
+{
+  "name": "@hypha/core",
+  "version": "0.1.0-dev",
+  "description": "Hypha core types — Node, Edge, Provenance, Store interface, Adapter + Inferrer contracts.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./model": "./src/model.ts",
+    "./store": "./src/store.ts",
+    "./adapter": "./src/adapter.ts",
+    "./inferrer": "./src/inferrer.ts",
+    "./id": "./src/id.ts",
+    "./time": "./src/time.ts"
+  },
+  "scripts": {
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  }
+}

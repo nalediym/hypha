@@ -1,0 +1,21 @@
+{
+  "name": "@hypha/cli",
+  "version": "0.1.0-dev",
+  "description": "Hypha CLI — ingest, infer, serve, publish, export/import, build-adapter.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "bin": { "hypha": "./src/bin.ts" },
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "build": "bun build src/bin.ts --outdir dist --target bun",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hypha/core": "workspace:*",
+    "@hypha/store-sqlite": "workspace:*",
+    "@hypha/adapter-sdk": "workspace:*",
+    "@hypha/inferrer-sdk": "workspace:*"
+  }
+}

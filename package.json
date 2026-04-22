@@ -1,0 +1,43 @@
+{
+  "name": "hypha",
+  "version": "0.1.0-dev",
+  "private": true,
+  "description": "Reverse hyperbrowser — Person OS for your static exports. A local-first personal/org knowledge graph library, agent-navigable via MCP.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Naledi <naniikekana@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/naledi/hypha.git"
+  },
+  "homepage": "https://github.com/naledi/hypha",
+  "keywords": [
+    "knowledge-graph",
+    "personal-data",
+    "mcp",
+    "local-first",
+    "reverse-hyperbrowser",
+    "agent-memory",
+    "bitemporal"
+  ],
+  "workspaces": [
+    "packages/*",
+    "packages/adapters/*",
+    "packages/inferrers/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "bun run --filter '*' build",
+    "typecheck": "bun run --filter '*' typecheck",
+    "test": "bun test",
+    "dev": "bun run --filter '@hypha/server' dev",
+    "dev:web": "bun run --filter '@hypha/web' dev",
+    "format": "prettier --write .",
+    "lint": "bun run typecheck"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prettier": "^3.3.0",
+    "typescript": "^5.6.0"
+  }
+}
