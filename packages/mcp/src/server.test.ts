@@ -54,7 +54,7 @@ describe('Hypha MCP server', () => {
 
     const tools = await client.listTools();
     const names = tools.tools.map((t) => t.name).sort();
-    expect(names).toEqual(['fetch', 'neighborhood', 'record', 'search', 'timeline', 'why'].sort());
+    expect(names).toEqual(['ask', 'fetch', 'neighborhood', 'record', 'search', 'timeline', 'why'].sort());
 
     const templates = await client.listResourceTemplates();
     const templateUris = templates.resourceTemplates.map((t) => t.uriTemplate).sort();
