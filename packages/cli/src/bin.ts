@@ -15,6 +15,9 @@ import { ingestCommand } from './commands/ingest.ts';
 import { inferCommand } from './commands/infer.ts';
 import { searchCommand } from './commands/search.ts';
 import { serveCommand } from './commands/serve.ts';
+import { publishCommand } from './commands/publish.ts';
+import { exportGraphitiCommand } from './commands/export-graphiti.ts';
+import { importGraphitiCommand } from './commands/import-graphiti.ts';
 import { buildAdapterCommand } from './commands/build-adapter.ts';
 
 const HELP = `hypha — reverse hyperbrowser CLI (v0.1.0-dev)
@@ -29,6 +32,10 @@ Usage:
       --db <path>                            Custom SQLite path.
 
   hypha serve [--db <path>]                  Run the MCP stdio server (for Claude Desktop).
+
+  hypha publish [--port 3456]                Run a read-only HTTP view.
+  hypha export --format graphiti --out FILE  Export graph as Graphiti-compatible JSON.
+  hypha import --format graphiti --in FILE   Import a Graphiti JSON bundle.
 
   hypha search <query>                       FTS5 full-text search.
       --kinds <k1,k2,…>                      Filter by node kinds.
@@ -56,6 +63,12 @@ async function main(): Promise<void> {
       return runInfer(argv.slice(1));
     case 'serve':
       return runServe(argv.slice(1));
+    case 'publish':
+      return runPublish(argv.slice(1));
+    case 'export':
+      return runExport(argv.slice(1));
+    case 'import':
+      return runImport(argv.slice(1));
     case 'search':
       return runSearch(argv.slice(1));
     case 'build-adapter':
@@ -120,6 +133,72 @@ async function runServe(argv: string[]): Promise<void> {
     ...(values.db ? { db: values.db } : {}),
     ...(values['instance-id'] ? { instanceId: values['instance-id'] } : {}),
     ...(values['instance-label'] ? { instanceLabel: values['instance-label'] } : {}),
+  });
+}
+
+async function runPublish(argv: string[]): Promise<void> {
+  const { values } = parseArgs({
+    args: argv,
+    options: {
+      db: { type: 'string' },
+      port: { type: 'string' },
+      host: { type: 'string' },
+      filter: { type: 'string' },
+    },
+  });
+  await publishCommand({
+    ...(values.db ? { db: values.db } : {}),
+    ...(values.port ? { port: parseInt(values.port, 10) } : {}),
+    ...(values.host ? { host: values.host } : {}),
+    ...(values.filter ? { filter: values.filter } : {}),
+  });
+}
+
+async function runExport(argv: string[]): Promise<void> {
+  const { values } = parseArgs({
+    args: argv,
+    options: {
+      format: { type: 'string' },
+      out: { type: 'string' },
+      db: { type: 'string' },
+    },
+  });
+  if (values.format !== 'graphiti') {
+    console.error('Only --format graphiti is supported (v1).');
+    process.exit(2);
+  }
+  if (!values.out) {
+    console.error('--out <file> is required');
+    process.exit(2);
+  }
+  await exportGraphitiCommand({
+    out: values.out,
+    ...(values.db ? { db: values.db } : {}),
+  });
+}
+
+async function runImport(argv: string[]): Promise<void> {
+  const { values } = parseArgs({
+    args: argv,
+    options: {
+      format: { type: 'string' },
+      in: { type: 'string' },
+      db: { type: 'string' },
+      owner: { type: 'string' },
+    },
+  });
+  if (values.format !== 'graphiti') {
+    console.error('Only --format graphiti is supported (v1).');
+    process.exit(2);
+  }
+  if (!values.in) {
+    console.error('--in <file> is required');
+    process.exit(2);
+  }
+  await importGraphitiCommand({
+    in: values.in,
+    ...(values.db ? { db: values.db } : {}),
+    ...(values.owner ? { owner: values.owner } : {}),
   });
 }
 
