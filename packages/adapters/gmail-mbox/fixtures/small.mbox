@@ -1,0 +1,45 @@
+From MAILER-DAEMON Fri Jul 14 14:03:11 2023
+From: Naledi Kekana <naledi@example.com>
+To: Mom <mom@example.com>
+Cc: Sister <sister@example.com>
+Subject: Dinner plans
+Date: Fri, 14 Jul 2023 14:03:11 -0400
+Message-ID: <m1-dinner@example.com>
+X-Gm-THRID: thread-dinner-1
+X-Gmail-Labels: Inbox, Family
+
+Hey Mom,
+
+Thinking we should do dinner at 7. See you then.
+
+Love,
+Naledi
+
+From MAILER-DAEMON Fri Jul 14 16:44:22 2023
+From: "Mom" <mom@example.com>
+To: Naledi Kekana <naledi@example.com>
+Cc: sister@example.com
+Subject: Re: Dinner plans
+Date: Fri, 14 Jul 2023 16:44:22 -0400
+Message-ID: <m2-dinner@example.com>
+In-Reply-To: <m1-dinner@example.com>
+References: <m1-dinner@example.com>
+X-Gm-THRID: thread-dinner-1
+X-Gmail-Labels: Inbox, Family
+
+7pm works. Should I bring the wine?
+
+From MAILER-DAEMON Mon Aug 21 09:15:00 2023
+From: GitHub <noreply@github.com>
+To: naledi@example.com
+Subject: [naledi/hypha] Successfully built
+Date: Mon, 21 Aug 2023 09:15:00 -0400
+Message-ID: <ci-build-4421@github.com>
+X-Gm-THRID: thread-ci-1
+
+Your build succeeded.
+
+>From the CI logs — everything looks green.
+
+Status: passing
+Duration: 3m 12s
