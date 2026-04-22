@@ -17,6 +17,9 @@
     "@hypha/store-sqlite": "workspace:*",
     "@hypha/adapter-sdk": "workspace:*",
     "@hypha/inferrer-sdk": "workspace:*",
-    "@hypha/adapter-gmail-mbox": "workspace:*"
+    "@hypha/adapter-gmail-mbox": "workspace:*",
+    "@hypha/inferrer-identity-resolver": "workspace:*",
+    "@hypha/mcp": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.29.0"
   }
 }

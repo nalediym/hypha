@@ -17,15 +17,20 @@ import { dirname, join } from 'node:path';
 
 import type {
   BitemporalCoord,
+  DerivationNode,
   EdgeId,
   InvalidateOp,
+  Iso8601,
   NodeId,
   Store,
   StoredEdge,
   StoredNode,
+  TimelineEvent,
+  TimelineResult,
   UpsertEdge,
   UpsertNode,
   UpsertResult,
+  WhyResult,
   WriteContext,
 } from '@hypha/core';
 import { now } from '@hypha/core';
@@ -220,10 +225,260 @@ export class SQLiteStore implements Store {
       })),
     };
   }
-  async neighborhood(): Promise<never> { throw notImpl('neighborhood'); }
-  async timeline(): Promise<never> { throw notImpl('timeline'); }
-  async why(): Promise<never> { throw notImpl('why'); }
-  async *scan(): AsyncIterable<never> { throw notImpl('scan'); }
+  /**
+   * 1- or 2-hop graph slice around a center node. Respects edge-kind + direction
+   * filters. `truncated: true` when the per-level limit caps results.
+   */
+  async neighborhood(q: {
+    id: NodeId;
+    depth?: 1 | 2 | 3;
+    edge_kinds?: readonly string[];
+    direction?: 'in' | 'out' | 'both';
+    limit?: number;
+  }): Promise<{
+    center: StoredNode;
+    nodes: StoredNode[];
+    edges: StoredEdge[];
+    truncated: boolean;
+  }> {
+    const depth = q.depth ?? 1;
+    const direction = q.direction ?? 'both';
+    const perLevelLimit = q.limit ?? 50;
+
+    const center = await this.getNode(q.id);
+    if (!center) {
+      throw new Error(`Node not found: ${q.id}`);
+    }
+
+    const seenNodes = new Map<string, StoredNode>([[center.id, center]]);
+    const seenEdges = new Map<string, StoredEdge>();
+    let frontier: NodeId[] = [q.id];
+    let truncated = false;
+
+    for (let hop = 0; hop < depth; hop++) {
+      const nextFrontier: NodeId[] = [];
+      for (const nodeId of frontier) {
+        const { nodes: hopNodes, edges: hopEdges, truncated: hopTrunc } = this.#expandNeighbors(
+          nodeId,
+          direction,
+          q.edge_kinds,
+          perLevelLimit,
+        );
+        truncated ||= hopTrunc;
+        for (const e of hopEdges) {
+          if (!seenEdges.has(e.id)) seenEdges.set(e.id, e);
+        }
+        for (const n of hopNodes) {
+          if (!seenNodes.has(n.id)) {
+            seenNodes.set(n.id, n);
+            nextFrontier.push(n.id as NodeId);
+          }
+        }
+      }
+      frontier = nextFrontier;
+    }
+
+    const nodes = [...seenNodes.values()].filter((n) => n.id !== center.id);
+    return { center, nodes, edges: [...seenEdges.values()], truncated };
+  }
+
+  #expandNeighbors(
+    id: NodeId,
+    direction: 'in' | 'out' | 'both',
+    edgeKinds: readonly string[] | undefined,
+    limit: number,
+  ): { nodes: StoredNode[]; edges: StoredEdge[]; truncated: boolean } {
+    const kindFilter = edgeKinds && edgeKinds.length > 0
+      ? ` AND kind IN (${edgeKinds.map(() => '?').join(',')})`
+      : '';
+    const clauses: string[] = [];
+    const params: unknown[] = [];
+    if (direction === 'out' || direction === 'both') {
+      clauses.push(`(source_id = ?${kindFilter})`);
+      params.push(id);
+      if (edgeKinds) params.push(...edgeKinds);
+    }
+    if (direction === 'in' || direction === 'both') {
+      clauses.push(`(target_id = ?${kindFilter})`);
+      params.push(id);
+      if (edgeKinds) params.push(...edgeKinds);
+    }
+    const sql = `
+      SELECT * FROM records
+      WHERE record_type = 'edge'
+        AND tx_invalidated IS NULL
+        AND (${clauses.join(' OR ')})
+      LIMIT ?
+    `;
+    params.push(limit + 1);
+
+    const edgeRows = this.#db.query(sql).all(...(params as [])) as RecordRow[];
+    const truncated = edgeRows.length > limit;
+    const edges = edgeRows.slice(0, limit).map(rowToStoredEdge);
+
+    // Fetch connected nodes.
+    const targetIds = new Set<string>();
+    for (const e of edges) {
+      if (e.from_id !== id) targetIds.add(e.from_id as string);
+      if (e.to_id !== id) targetIds.add(e.to_id as string);
+    }
+    const nodes: StoredNode[] = [];
+    if (targetIds.size > 0) {
+      const placeholders = [...targetIds].map(() => '?').join(',');
+      const nodeRows = this.#db
+        .query(
+          `SELECT * FROM records WHERE record_type = 'node' AND tx_invalidated IS NULL AND id IN (${placeholders})`,
+        )
+        .all(...([...targetIds] as [])) as RecordRow[];
+      nodes.push(...nodeRows.map(rowToStoredNode));
+    }
+    return { nodes, edges, truncated };
+  }
+
+  /**
+   * Timeline — events by time. Optional subject restricts to records
+   * connected to that node via any edge (both directions). Returns nodes
+   * ordered by event time (`at`).
+   */
+  async timeline(q: import('@hypha/core').TimelineQuery): Promise<TimelineResult> {
+    const limit = q.limit ?? 50;
+    const params: unknown[] = [];
+    const clauses: string[] = ['r.record_type = ?', 'r.tx_invalidated IS NULL'];
+    params.push('node');
+
+    if (q.kinds && q.kinds.length > 0) {
+      clauses.push(`r.kind IN (${q.kinds.map(() => '?').join(',')})`);
+      params.push(...q.kinds);
+    }
+    if (q.range?.from) { clauses.push('r.at >= ?'); params.push(q.range.from); }
+    if (q.range?.to) { clauses.push('r.at <= ?'); params.push(q.range.to); }
+    if (q.cursor) { clauses.push('r.at < ?'); params.push(q.cursor); }
+
+    let sql: string;
+    if (q.subject) {
+      sql = `
+        SELECT r.* FROM records r
+        WHERE ${clauses.join(' AND ')}
+          AND r.id IN (
+            SELECT target_id FROM records WHERE record_type = 'edge' AND tx_invalidated IS NULL AND source_id = ?
+            UNION
+            SELECT source_id FROM records WHERE record_type = 'edge' AND tx_invalidated IS NULL AND target_id = ?
+          )
+        ORDER BY r.at DESC
+        LIMIT ?
+      `;
+      params.push(q.subject, q.subject, limit + 1);
+    } else {
+      sql = `
+        SELECT r.* FROM records r
+        WHERE ${clauses.join(' AND ')}
+        ORDER BY r.at DESC
+        LIMIT ?
+      `;
+      params.push(limit + 1);
+    }
+
+    const rows = this.#db.query(sql).all(...(params as [])) as RecordRow[];
+    const hasMore = rows.length > limit;
+    const events: TimelineEvent[] = rows.slice(0, limit).map((r) => ({
+      record: rowToStoredNode(r),
+      anchor: r.at as Iso8601,
+    }));
+    return hasMore && events.length > 0
+      ? { events, nextCursor: String(events[events.length - 1]!.anchor) }
+      : { events };
+  }
+
+  /**
+   * Walk the provenance tree of a record, returning its derivation + the
+   * ingested leaves. For ingested records the derivation is a leaf.
+   */
+  async why(id: NodeId | EdgeId, depth = 3): Promise<WhyResult> {
+    const subject = await this.#getAny(id as string);
+    if (!subject) throw new Error(`Record not found: ${id}`);
+
+    const citations: (StoredNode | StoredEdge)[] = [];
+    const visited = new Set<string>();
+    const fallbackProv = {
+      kind: 'ingested' as const,
+      adapter: '',
+      adapter_version: '',
+      external_id: '',
+    };
+
+    const walk = async (currentId: string, currentDepth: number): Promise<DerivationNode> => {
+      const record = await this.#getAny(currentId);
+      if (visited.has(currentId) || currentDepth > depth || !record) {
+        return {
+          subject_id: currentId,
+          provenance: record?.provenance ?? fallbackProv,
+          inputs: [],
+        };
+      }
+      visited.add(currentId);
+      if (record.provenance.kind === 'ingested') {
+        citations.push(record);
+        return { subject_id: currentId, provenance: record.provenance, inputs: [] };
+      }
+      const inputs: DerivationNode[] = [];
+      for (const inputId of record.provenance.inputs) {
+        inputs.push(await walk(inputId as string, currentDepth + 1));
+      }
+      return { subject_id: currentId, provenance: record.provenance, inputs };
+    };
+
+    const derivation = await walk(id as string, 0);
+    return {
+      subject,
+      inferred: subject.provenance.kind === 'inferred',
+      derivation,
+      citations,
+    };
+  }
+
+  async #getAny(id: string): Promise<StoredNode | StoredEdge | null> {
+    const row = this.#db
+      .query<RecordRow, { $id: string }>(
+        `SELECT * FROM records WHERE id = $id AND tx_invalidated IS NULL LIMIT 1`,
+      )
+      .get({ $id: id });
+    if (!row) return null;
+    return row.record_type === 'node' ? rowToStoredNode(row) : rowToStoredEdge(row);
+  }
+
+  /**
+   * Stream records of one or more kinds. Supports trailing-wildcard kind
+   * patterns (`identity.*`). Bitemporally filtered: currently-believed only.
+   */
+  async *scan(
+    kinds: readonly string[],
+  ): AsyncIterable<StoredNode | StoredEdge> {
+    const exactKinds: string[] = [];
+    const prefixKinds: string[] = [];
+    for (const k of kinds) {
+      if (k.endsWith('.*')) prefixKinds.push(k.slice(0, -1));
+      else if (k === '*') prefixKinds.push('');
+      else exactKinds.push(k);
+    }
+    const where: string[] = ['tx_invalidated IS NULL'];
+    const params: unknown[] = [];
+    const clauses: string[] = [];
+    if (exactKinds.length > 0) {
+      clauses.push(`kind IN (${exactKinds.map(() => '?').join(',')})`);
+      params.push(...exactKinds);
+    }
+    for (const prefix of prefixKinds) {
+      clauses.push(`kind LIKE ?`);
+      params.push(`${prefix}%`);
+    }
+    if (clauses.length > 0) where.push(`(${clauses.join(' OR ')})`);
+
+    const sql = `SELECT * FROM records WHERE ${where.join(' AND ')} ORDER BY tx_created`;
+    const rows = this.#db.query(sql).all(...(params as [])) as RecordRow[];
+    for (const row of rows) {
+      yield row.record_type === 'node' ? rowToStoredNode(row) : rowToStoredEdge(row);
+    }
+  }
 
   // ── Writes ─────────────────────────────────────────────────────────────
 

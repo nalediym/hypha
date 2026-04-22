@@ -12,7 +12,9 @@
 
 import { parseArgs } from 'node:util';
 import { ingestCommand } from './commands/ingest.ts';
+import { inferCommand } from './commands/infer.ts';
 import { searchCommand } from './commands/search.ts';
+import { serveCommand } from './commands/serve.ts';
 import { buildAdapterCommand } from './commands/build-adapter.ts';
 
 const HELP = `hypha — reverse hyperbrowser CLI (v0.1.0-dev)
@@ -22,6 +24,11 @@ Usage:
       --db <path>                            Custom SQLite path (default: .hypha/store.sqlite)
       --owner <id>                           Owner instance id (default: local-owner)
       --dry-run                              Parse + validate but don't write.
+
+  hypha infer [inferrer]                     Run an inferrer (or all).
+      --db <path>                            Custom SQLite path.
+
+  hypha serve [--db <path>]                  Run the MCP stdio server (for Claude Desktop).
 
   hypha search <query>                       FTS5 full-text search.
       --kinds <k1,k2,…>                      Filter by node kinds.
@@ -45,6 +52,10 @@ async function main(): Promise<void> {
   switch (cmd) {
     case 'ingest':
       return runIngest(argv.slice(1));
+    case 'infer':
+      return runInfer(argv.slice(1));
+    case 'serve':
+      return runServe(argv.slice(1));
     case 'search':
       return runSearch(argv.slice(1));
     case 'build-adapter':
@@ -77,6 +88,38 @@ async function runIngest(argv: string[]): Promise<void> {
     ...(values.db ? { db: values.db } : {}),
     ...(values.owner ? { owner: values.owner } : {}),
     ...(values['dry-run'] ? { dryRun: true } : {}),
+  });
+}
+
+async function runInfer(argv: string[]): Promise<void> {
+  const { positionals, values } = parseArgs({
+    args: argv,
+    allowPositionals: true,
+    options: {
+      db: { type: 'string' },
+      owner: { type: 'string' },
+    },
+  });
+  await inferCommand({
+    ...(positionals[0] ? { inferrer: positionals[0] } : {}),
+    ...(values.db ? { db: values.db } : {}),
+    ...(values.owner ? { owner: values.owner } : {}),
+  });
+}
+
+async function runServe(argv: string[]): Promise<void> {
+  const { values } = parseArgs({
+    args: argv,
+    options: {
+      db: { type: 'string' },
+      'instance-id': { type: 'string' },
+      'instance-label': { type: 'string' },
+    },
+  });
+  await serveCommand({
+    ...(values.db ? { db: values.db } : {}),
+    ...(values['instance-id'] ? { instanceId: values['instance-id'] } : {}),
+    ...(values['instance-label'] ? { instanceLabel: values['instance-label'] } : {}),
   });
 }
 
