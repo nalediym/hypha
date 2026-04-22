@@ -6,6 +6,29 @@ Hypha adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added — W7-8 MCP surface + governance
+- `@hypha/mcp`: full MCP server with six intent-shaped tools (`search`, `neighborhood`, `timeline`, `why`, `fetch`, `record`), two resource templates (`hypha://node/{id}`, `hypha://edge/{id}`), and one prompt (`/hypha:weekly-digest`). Tool annotations (`readOnlyHint`, `idempotentHint`, `openWorldHint`) set correctly. All tools return `structuredContent` with `instance_id` + inline provenance.
+- `@hypha/governance`: `AuditLog` (SQLite `audit` table writer with `pii_kinds_seen`), `AllowAllPolicy` + `OwnerOnlyPolicy` stubs behind a `PolicyEngine` interface. Cedar binding deferred until the Rust crate has stable Bun bindings.
+- `SQLiteStore`: implemented `neighborhood` (1-3 hop traversal with direction + edge-kind filters + truncation flag), `timeline` (time-ordered events, optionally subject-scoped, cursor-paginated), `why` (walks provenance tree to ingested leaves + returns citations).
+- `hypha serve` CLI command (stdio transport for Claude Desktop).
+- Identity-resolver edge ids are now content-addressed from the pair hash, making re-runs genuinely idempotent.
+- 4 new MCP server tests via InMemoryTransport: list tools/resources, search through MCP, fetch resolves URIs, why walks inferred derivations.
+
+### Known gaps
+- Streamable HTTP transport, OAuth 2.1 + PKCE, biometric DEK unlock (Swift helper) scaffolded but not wired — land in a future milestone.
+
+### Added — W5-6 inferrer SDK + identity-resolver
+- `@hypha/inferrer-sdk`: `defineInferrer()`, `runInferrer()`, `runInferrers()` with topological ordering (reads ↔ writes DAG, cycle detection, `.*` kind patterns), `inputs_hash` idempotency.
+- `@hypha/inferrer-identity-resolver`: three-stage cascade.
+  - **Block**: multi-key union blocking (by domain, by local-part, by name-tokens) so cross-domain matches are caught.
+  - **Score**: pragmatic Fellegi-Sunter-inspired additive weighting (same_local_part +0.75, display_name_jw_high +0.35, etc.) capped at 1.0.
+  - **Cluster**: WCC via union-find over match edges at confidence ≥ 0.80. Persons are emitted only for clusters of size ≥ 2; singletons omitted.
+- Jaro-Winkler distance + weakly-connected-components helpers (reusable).
+- `Store.scan(kinds[])` — streams currently-believed records by kind (supports `kind.*` prefix patterns).
+- `hypha infer [inferrer]` CLI command.
+- LLM-judge cascade tail is scaffolded via `ctx.reasoner` but disabled until W7-8 plumbs the Reasoner interface.
+- E2E: a fixture with `naledi@gmail.com` + `naledi@uncommonschools.org` (same display name) clusters into one `person` node; re-runs are idempotent.
+
 ### Added — W3-4 adapter SDK + gmail-mbox
 - `@hypha/adapter-sdk`: `defineAdapter()`, `runAdapter()`, `loadManifest`/`parseManifest` (Zod-validated YAML), `assertAdapterContract()` with six assertions (id-stability, idempotent-ingest, capabilities-match-behavior, edge-kinds-declared, facets-validate, emits-match-manifest).
 - `@hypha/adapter-gmail-mbox`: streaming mbox parser, Zod facet schemas for `gmail.message`/`gmail.thread`/`identity.email`, emits `sent_to`/`cc`/`bcc`/`part_of_thread`/`replied_to` edges. Content-addressed message ids make re-ingest idempotent.
