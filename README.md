@@ -15,6 +15,18 @@ A local-first personal/org knowledge graph library. Ingests static data exports 
 
 `v0.1.0-alpha` — the core is end-to-end wired; some adapters and the web UI are deferred. See [CHANGELOG](./CHANGELOG.md).
 
+![Tests: 27 passing](https://img.shields.io/badge/tests-27%20passing-brightgreen)
+
+<!-- TODO: GIF of Claude Desktop calling search() → neighborhood() → why() on a real mbox, showing inline provenance -->
+
+## Who is this for?
+
+- **People with a decade of Gmail and Drive** who want an AI agent that can actually reason across it — without uploading it to anyone.
+- **Privacy-minded power users** who already run Claude Desktop or Cursor locally and want their own data as a first-class tool surface.
+- **Builders of personal agents** who need a typed, temporal substrate instead of re-inventing embeddings-over-PDFs every project.
+
+If you've ever thought *"my inbox knows the answer, but I can't ask it"* — Hypha is for you.
+
 ## Quick start
 
 ```bash
@@ -99,6 +111,14 @@ The bet: **the archive is the source of truth**. Logins rot. Accounts get delete
 - Constellation UI (Next.js 16 port of [my-ai-browser](https://github.com/naledi/my-ai-browser)).
 - Streamable HTTP transport + OAuth 2.1 + PKCE, biometric DEK unlock (Swift helper), SQLCipher `envelope` mode.
 - `@hypha/store-postgres` (interface stubbed; implementation in v1.2).
+
+## FAQ
+
+**Does anything leave my machine?** No. Ingestion, inference, search, and MCP serving are all local. The only optional network call is Claude Haiku for `ask()` NL compilation, gated on `ANTHROPIC_API_KEY`; omit the key and it falls back to FTS.
+
+**Why bitemporal from v0.1?** Because retroactive corrections to a personal archive are the common case, not the edge case. Migrating to bitemporal later is a rewrite; starting bitemporal is free.
+
+**Can I use it without Claude?** Yes — any MCP client works, and `hypha publish` exposes a read-only HTTP API with zero MCP dependency.
 
 ## Architecture at a glance
 

@@ -36,3 +36,4 @@ user-space/
 .build/
 Package.resolved
 native/*/.build/
+.going-public/
