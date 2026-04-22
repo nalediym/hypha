@@ -1,0 +1,43 @@
+id: gmail-mbox
+version: 0.1.0
+name: "Gmail mbox importer"
+description: "Ingests Google Takeout Mail mbox archives into Hypha's typed graph."
+
+emits:
+  kinds:
+    - kind: gmail.message
+      facet_schema_version: 1
+      id_strategy: content_addressed
+    - kind: gmail.thread
+      facet_schema_version: 1
+      id_strategy: derived
+    - kind: identity.email
+      facet_schema_version: 1
+      id_strategy: natural
+  edges:
+    - sent_to
+    - cc
+    - bcc
+    - part_of_thread
+    - replied_to
+
+capabilities:
+  ingest_modes: [full]
+  bounded: true
+  emits_content_addressed_ids: true
+  supports_corrections: true
+  supports_dry_run: true
+  idempotent: true
+
+inputs:
+  - name: mbox_path
+    type: path
+    required: true
+    description: "Path to a .mbox file exported from Google Takeout Mail."
+
+schema_evolution:
+  gmail.message:
+    on_new_field: evolve
+    on_type_change: freeze
+  identity.email:
+    on_new_field: evolve
