@@ -18,7 +18,9 @@
     "@hypha/adapter-sdk": "workspace:*",
     "@hypha/inferrer-sdk": "workspace:*",
     "@hypha/adapter-gmail-mbox": "workspace:*",
+    "@hypha/adapter-google-drive-folder": "workspace:*",
     "@hypha/inferrer-identity-resolver": "workspace:*",
+    "@hypha/inferrer-dlp-scanner": "workspace:*",
     "@hypha/mcp": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.29.0"
   }

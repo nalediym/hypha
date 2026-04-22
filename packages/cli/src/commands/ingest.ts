@@ -11,6 +11,8 @@ import { SQLiteStore } from '@hypha/store-sqlite';
  */
 const ADAPTER_REGISTRY: Readonly<Record<string, () => Promise<{ default: HyphaAdapter<unknown> }>>> = {
   'gmail-mbox': () => import('@hypha/adapter-gmail-mbox') as Promise<{ default: HyphaAdapter<unknown> }>,
+  'google-drive-folder': () =>
+    import('@hypha/adapter-google-drive-folder') as Promise<{ default: HyphaAdapter<unknown> }>,
 };
 
 export interface IngestArgs {
@@ -82,8 +84,9 @@ function inputsForAdapter(adapterId: string, input: string): Record<string, unkn
   switch (adapterId) {
     case 'gmail-mbox':
       return { mbox_path: input };
+    case 'google-drive-folder':
+      return { folder_path: input };
     default:
-      // Best-effort: pass as generic `path`.
       return { path: input };
   }
 }

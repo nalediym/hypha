@@ -11,6 +11,7 @@ import { SQLiteStore } from '@hypha/store-sqlite';
 const INFERRER_REGISTRY: Readonly<Record<string, () => Promise<{ default: Inferrer }>>> = {
   'identity-resolver': () =>
     import('@hypha/inferrer-identity-resolver') as Promise<{ default: Inferrer }>,
+  'dlp-scanner': () => import('@hypha/inferrer-dlp-scanner') as Promise<{ default: Inferrer }>,
 };
 
 export interface InferArgs {
