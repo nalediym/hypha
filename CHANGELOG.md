@@ -54,7 +54,7 @@ First tagged release. The core is end-to-end wired; several adapters and the web
 - `Store.scan(kinds[])` — streams currently-believed records by kind (supports `kind.*` prefix patterns).
 - `hypha infer [inferrer]` CLI command.
 - LLM-judge cascade tail is scaffolded via `ctx.reasoner` but disabled until W7-8 plumbs the Reasoner interface.
-- E2E: a fixture with `naledi@gmail.com` + `naledi@uncommonschools.org` (same display name) clusters into one `person` node; re-runs are idempotent.
+- E2E: a fixture with `alice@example.com` + `alice@acme-school.example.com` (same display name) clusters into one `person` node; re-runs are idempotent.
 
 ### Added — W3-4 adapter SDK + gmail-mbox
 - `@hypha/adapter-sdk`: `defineAdapter()`, `runAdapter()`, `loadManifest`/`parseManifest` (Zod-validated YAML), `assertAdapterContract()` with six assertions (id-stability, idempotent-ingest, capabilities-match-behavior, edge-kinds-declared, facets-validate, emits-match-manifest).

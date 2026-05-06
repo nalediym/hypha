@@ -15,11 +15,12 @@ const FIXTURE = join(__dirname, '..', 'fixtures', 'with-duplicates.mbox');
 
 describe('jaro-winkler', () => {
   test('identical strings → 1', () => {
-    expect(jaroWinkler('naledi kekana', 'naledi kekana')).toBe(1);
+    expect(jaroWinkler('alice kim', 'alice kim')).toBe(1);
   });
   test('shared prefix boosts score', () => {
-    const withPrefix = jaroWinkler('naledi', 'nalemo');
-    const withoutPrefix = jaroWinkler('naledi', 'zalemi');
+    // Canonical Jaro-Winkler test pair (Winkler 1990).
+    const withPrefix = jaroWinkler('martha', 'marhta');
+    const withoutPrefix = jaroWinkler('martha', 'zelmar');
     expect(withPrefix).toBeGreaterThan(withoutPrefix);
   });
   test('empty input → 0', () => {
@@ -29,8 +30,8 @@ describe('jaro-winkler', () => {
 
 describe('scorePair', () => {
   test('identical emails + names → auto-match', () => {
-    const a = parseIdentity('a', 'naledi@gmail.com', 'Naledi Kekana');
-    const b = parseIdentity('b', 'naledi@work.com', 'Naledi Kekana');
+    const a = parseIdentity('a', 'alice@example.com', 'Alice Kim');
+    const b = parseIdentity('b', 'alice@work.example.com', 'Alice Kim');
     const s = scorePair(a, b);
     expect(s.confidence).toBeGreaterThanOrEqual(MATCH_THRESHOLD);
   });
@@ -60,7 +61,7 @@ describe('weaklyConnectedComponents', () => {
 });
 
 describe('identity-resolver E2E', () => {
-  test('clusters naledi@gmail.com and naledi@uncommonschools.org into one person', async () => {
+  test('clusters alice@example.com and alice@acme-school.example.com into one person', async () => {
     const store = new SQLiteStore({ path: ':memory:', ownerInstanceId: 'test' });
     await runAdapter({
       adapter: gmailMboxAdapter,
@@ -91,7 +92,7 @@ describe('identity-resolver E2E', () => {
     expect(second.edges_written).toBe(0);
 
     // Confirm the person node surfaces via search.
-    const hits = await store.search({ text: 'Naledi Kekana', kinds: ['person'] });
+    const hits = await store.search({ text: 'Alice Kim', kinds: ['person'] });
     expect(hits.hits.length).toBeGreaterThanOrEqual(1);
     const person = hits.hits[0]!.node;
     expect(person.kind).toBe('person');
@@ -102,8 +103,8 @@ describe('identity-resolver E2E', () => {
       expect(person.provenance.inputs.length).toBeGreaterThanOrEqual(2);
     }
     const addresses = (person.facets?.addresses as string[] | undefined) ?? [];
-    expect(addresses).toContain('naledi@gmail.com');
-    expect(addresses).toContain('naledi@uncommonschools.org');
+    expect(addresses).toContain('alice@example.com');
+    expect(addresses).toContain('alice@acme-school.example.com');
 
     await store.close();
   });

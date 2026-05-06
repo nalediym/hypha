@@ -10,7 +10,7 @@ describe('scanString', () => {
     expect(f.some((x) => x.kind === 'ssn')).toBe(true);
   });
   test('finds email', () => {
-    const f = scanString('Contact naledi@example.com for details');
+    const f = scanString('Contact alice@example.com for details');
     expect(f.some((x) => x.kind === 'email')).toBe(true);
   });
   test('finds Luhn-valid credit card', () => {

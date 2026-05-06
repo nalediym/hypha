@@ -7,12 +7,12 @@
  * Feature weights are additive (capped at 1.0). Each feature contributes
  * its weight only when it fires; absence is neutral, not negative.
  *
- *   same_local_part            +0.75   naledi@gmail.com ↔ naledi@work.com
+ *   same_local_part            +0.75   alice@example.com ↔ alice@work.example.com
  *   same_domain                +0.10   weak signal on its own
- *   display_name_jw ≥ 0.92     +0.35   "Naledi Kekana" ↔ "Naledi K"
+ *   display_name_jw ≥ 0.92     +0.35   "Alice Kim" ↔ "Alice K"
  *   display_name_jw ≥ 0.80     +0.15   weaker fuzzy-name match
  *   local_part_jw ≥ 0.92       +0.20   nkekana ↔ n.kekana (same domain implied for signal)
- *   name_contains_localpart    +0.20   "Naledi Kekana" ↔ naledi@...
+ *   name_contains_localpart    +0.20   "Alice Kim" ↔ alice@...
  *
  * Thresholds:
  *   confidence ≥ 0.80  → auto-match   (emit identity.same_as edge)
@@ -70,7 +70,7 @@ export function scorePair(a: IdentityRecord, b: IdentityRecord): PairScore {
   }
 
   // Does the display-name token set contain the other's local-part?
-  // "Naledi Kekana" matched with naledi@gmail.com would fire here.
+  // "Alice Kim" matched with alice@example.com would fire here.
   if (a.display_name && b.localPart && nameTokensInclude(a.display_name, b.localPart)) {
     f.name_contains_localpart_b = 0.2;
     score += 0.2;

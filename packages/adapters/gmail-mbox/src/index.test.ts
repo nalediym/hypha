@@ -28,7 +28,7 @@ describe('gmail-mbox adapter', () => {
       ownerInstanceId: 'test',
     });
 
-    // 3 messages, 2 threads (dinner + ci), ≥4 identities (naledi, mom, sister, github noreply)
+    // 3 messages, 2 threads (dinner + ci), ≥4 identities (alice, mom, sister, github noreply)
     expect(result.nodes_written).toBeGreaterThanOrEqual(9);
     // sent_to + cc + part_of_thread + replied_to edges
     expect(result.edges_written).toBeGreaterThanOrEqual(7);

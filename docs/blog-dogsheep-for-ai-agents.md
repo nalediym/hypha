@@ -53,7 +53,7 @@ The first inferrer — `identity-resolver` — runs a three-stage cascade:
 2. **Score.** Pragmatic Fellegi-Sunter-inspired additive weighting with Jaro-Winkler on display names. LLM judge on the ambiguous 0.3–0.75 band, when Claude is wired in.
 3. **Cluster.** Weakly-connected-components over match edges. `person.*` nodes emerge.
 
-Feed it `naledi@gmail.com` and `naledi@uncommonschools.org` — same display name, different domains — and Hypha emits a single `person` node whose `facets.addresses` contains both, with provenance pointing to the two `identity.email` source nodes. When a human confirms a merge, they write an `identity.label` *ingested* fact with confidence=1.0, which dominates automatically on next re-run. No special case.
+Feed it `alice@example.com` and `alice@acme-school.example.com` — same display name, different domains — and Hypha emits a single `person` node whose `facets.addresses` contains both, with provenance pointing to the two `identity.email` source nodes. When a human confirms a merge, they write an `identity.label` *ingested* fact with confidence=1.0, which dominates automatically on next re-run. No special case.
 
 ## Six (seven) tools
 

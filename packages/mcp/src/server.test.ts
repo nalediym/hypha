@@ -80,7 +80,7 @@ describe('Hypha MCP server', () => {
 
     const result = await client.callTool({
       name: 'search',
-      arguments: { q: 'Naledi Kekana', kinds: ['person'] },
+      arguments: { q: 'Alice Kim', kinds: ['person'] },
     });
     const sc = result.structuredContent as { hits: { id: string; provenance: { kind: string } }[] };
     expect(sc.hits.length).toBeGreaterThanOrEqual(1);
@@ -104,7 +104,7 @@ describe('Hypha MCP server', () => {
     const client = new Client({ name: 'test-client', version: '0.0.1' });
     await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
 
-    const search = await client.callTool({ name: 'search', arguments: { q: 'Naledi Kekana', kinds: ['person'] } });
+    const search = await client.callTool({ name: 'search', arguments: { q: 'Alice Kim', kinds: ['person'] } });
     const firstId = (search.structuredContent as { hits: { id: string }[] }).hits[0]!.id;
 
     const fetched = await client.callTool({
@@ -132,7 +132,7 @@ describe('Hypha MCP server', () => {
     const client = new Client({ name: 'test-client', version: '0.0.1' });
     await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
 
-    const search = await client.callTool({ name: 'search', arguments: { q: 'Naledi Kekana', kinds: ['person'] } });
+    const search = await client.callTool({ name: 'search', arguments: { q: 'Alice Kim', kinds: ['person'] } });
     const id = (search.structuredContent as { hits: { id: string }[] }).hits[0]!.id;
     const why = await client.callTool({ name: 'why', arguments: { id } });
     const wc = why.structuredContent as { inferred: boolean; citations: { kind: string }[] };

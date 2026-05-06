@@ -1,5 +1,5 @@
 From MAILER-DAEMON Fri Jul 14 14:03:11 2023
-From: Naledi Kekana <naledi@example.com>
+From: Alice Kim <alice@example.com>
 To: Mom <mom@example.com>
 Cc: Sister <sister@example.com>
 Subject: Dinner plans
@@ -13,11 +13,11 @@ Hey Mom,
 Thinking we should do dinner at 7. See you then.
 
 Love,
-Naledi
+Alice
 
 From MAILER-DAEMON Fri Jul 14 16:44:22 2023
 From: "Mom" <mom@example.com>
-To: Naledi Kekana <naledi@example.com>
+To: Alice Kim <alice@example.com>
 Cc: sister@example.com
 Subject: Re: Dinner plans
 Date: Fri, 14 Jul 2023 16:44:22 -0400
@@ -31,8 +31,8 @@ X-Gmail-Labels: Inbox, Family
 
 From MAILER-DAEMON Mon Aug 21 09:15:00 2023
 From: GitHub <noreply@github.com>
-To: naledi@example.com
-Subject: [naledi/hypha] Successfully built
+To: alice@example.com
+Subject: [example/repo] Successfully built
 Date: Mon, 21 Aug 2023 09:15:00 -0400
 Message-ID: <ci-build-4421@github.com>
 X-Gm-THRID: thread-ci-1

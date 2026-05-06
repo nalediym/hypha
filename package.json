@@ -5,7 +5,7 @@
   "description": "Person OS for your static exports — a local-first personal/org knowledge graph library, agent-navigable via MCP.",
   "type": "module",
   "license": "Apache-2.0",
-  "author": "Naledi <naniikekana@gmail.com>",
+  "author": "nalediym <nalediym@users.noreply.github.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/nalediym/hypha.git"

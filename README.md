@@ -44,7 +44,7 @@ bun run hypha infer dlp-scanner
 
 # Query
 bun run hypha search "Dinner plans"
-bun run hypha search "Naledi Kekana" --kinds person
+bun run hypha search "Alice Kim" --kinds person
 
 # Serve over MCP for Claude Desktop / Cursor
 bun run hypha serve
@@ -107,7 +107,7 @@ The bet: **the archive is the source of truth**. Logins rot. Accounts get delete
 
 - `google-takeout`, `slack-export`, `microsoft-365-export`, `notion-export` adapters.
 - `community-summarizer` (GraphRAG-style Leiden + LLM summaries) and `memify` (usage-based salience) inferrers.
-- Constellation UI (Next.js 16 port of [my-ai-browser](https://github.com/naledi/my-ai-browser)).
+- Constellation UI (planned Next.js 16 web frontend).
 - Streamable HTTP transport + OAuth 2.1 + PKCE, biometric DEK unlock (Swift helper), SQLCipher `envelope` mode.
 - `@hypha/store-postgres` (interface stubbed; implementation in v1.2).
 
