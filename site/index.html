@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hypha — Person OS for your static exports</title>
+<meta name="description" content="A local-first personal/org knowledge graph library. Ingests static data exports into a typed bitemporal graph that AI agents navigate over MCP.">
+<meta name="theme-color" content="#1a3d2e">
+<meta property="og:title" content="Hypha — Person OS for your static exports">
+<meta property="og:description" content="Local-first personal/org knowledge graph library. Ingests static exports into a typed bitemporal graph. Agent-navigable via MCP.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hypha-nalediym.vercel.app">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f4ed;
+  --bg-alt: #efeae0;
+  --surface: #ffffff;
+  --ink: #1a1a1a;
+  --ink-soft: #4a4a4a;
+  --ink-faint: #7a7a7a;
+  --accent: #1a3d2e;
+  --accent-soft: #2d5a44;
+  --accent-glow: rgba(26, 61, 46, 0.08);
+  --border: #d8d2c4;
+  --code-bg: #1a1a1a;
+  --code-ink: #f5f3ed;
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+a:hover { border-bottom-color: var(--accent); }
+code { font-family: var(--mono); font-size: 0.92em; background: var(--accent-glow); padding: 0.1em 0.35em; border-radius: 3px; color: var(--accent-soft); }
+.container { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+.container-wide { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+/* Header */
+.site-header { padding: 28px 0; border-bottom: 1px solid var(--border); }
+.site-header .container { display: flex; align-items: center; justify-content: space-between; }
+.brand { font-family: var(--serif); font-size: 22px; font-weight: 500; color: var(--ink); letter-spacing: -0.01em; border-bottom: none; }
+.brand:hover { border-bottom: none; color: var(--accent); }
+.nav { display: flex; gap: 28px; font-size: 14px; }
+.nav a { color: var(--ink-soft); border-bottom: none; }
+.nav a:hover { color: var(--accent); }
+
+/* Hero */
+.hero { padding: 96px 0 80px; text-align: center; background: linear-gradient(180deg, var(--bg) 0%, var(--bg-alt) 100%); border-bottom: 1px solid var(--border); }
+.hero h1 { font-family: var(--serif); font-size: 64px; font-weight: 500; line-height: 1.05; letter-spacing: -0.025em; color: var(--ink); margin-bottom: 20px; }
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero .tagline { font-size: 21px; color: var(--ink-soft); max-width: 620px; margin: 0 auto 36px; line-height: 1.45; }
+.hero .ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 22px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-size: 15px; font-weight: 500; border-radius: 8px; transition: transform 0.1s, background 0.15s; border-bottom: none; }
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-primary:hover { background: var(--accent-soft); border-bottom: none; transform: translateY(-1px); }
+.btn-secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); border-bottom: 1px solid var(--accent); transform: translateY(-1px); }
+.hero .meta { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); letter-spacing: 0.04em; text-transform: uppercase; }
+.hero .meta span { display: inline-block; margin: 0 6px; }
+.hero .meta strong { color: var(--accent); font-weight: 500; }
+
+/* Section */
+section { padding: 80px 0; }
+section + section { border-top: 1px solid var(--border); }
+section h2 { font-family: var(--serif); font-size: 36px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 14px; }
+section .lede { font-size: 18px; color: var(--ink-soft); max-width: 640px; margin-bottom: 44px; }
+
+/* Feature grid */
+.features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.feature {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px 24px;
+}
+.feature .label { font-family: var(--mono); font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; font-weight: 500; }
+.feature h3 { font-family: var(--serif); font-size: 22px; font-weight: 500; color: var(--ink); margin-bottom: 10px; line-height: 1.25; }
+.feature p { font-size: 14.5px; color: var(--ink-soft); line-height: 1.55; }
+.feature p + p { margin-top: 8px; }
+
+/* Tools list */
+.tools { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 28px; max-width: 760px; }
+.tool { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.tool code { font-size: 13px; min-width: 130px; background: var(--accent-glow); color: var(--accent); padding: 4px 10px; border-radius: 4px; height: fit-content; font-weight: 500; }
+.tool .desc { font-size: 14.5px; color: var(--ink-soft); line-height: 1.5; }
+
+/* Code block */
+.code-block { background: var(--code-bg); color: var(--code-ink); border-radius: 10px; padding: 22px 24px; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; overflow-x: auto; }
+.code-block .comment { color: #8a8a8a; }
+.code-block .prompt { color: #5fc97c; }
+.code-block .arg { color: #c8a165; }
+
+/* Privacy callout */
+.privacy { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 36px 40px; }
+.privacy ul { list-style: none; padding: 0; margin-top: 16px; }
+.privacy li { padding: 10px 0; padding-left: 28px; position: relative; font-size: 15px; color: var(--ink-soft); line-height: 1.5; border-bottom: 1px dotted var(--border); }
+.privacy li:last-child { border-bottom: none; }
+.privacy li::before { content: ""; position: absolute; left: 0; top: 16px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); }
+.privacy li.warn::before { background: #d4a04d; }
+.privacy li strong { color: var(--ink); font-weight: 600; }
+
+/* Status row */
+.status-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.status-cell { padding: 18px 0; }
+.status-cell .key { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.status-cell .val { font-family: var(--serif); font-size: 19px; color: var(--ink); font-weight: 500; }
+
+/* Footer */
+.site-footer { padding: 48px 0 64px; border-top: 1px solid var(--border); margin-top: 0; background: var(--bg-alt); }
+.footer-grid { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 28px; }
+.footer-col h4 { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; font-weight: 500; }
+.footer-col a { display: block; color: var(--ink-soft); font-size: 14px; padding: 3px 0; border-bottom: none; }
+.footer-col a:hover { color: var(--accent); }
+.footer-meta { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 13px; color: var(--ink-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+/* Responsive */
+@media (max-width: 720px) {
+  .hero { padding: 64px 0 56px; }
+  .hero h1 { font-size: 44px; }
+  .hero .tagline { font-size: 18px; }
+  section { padding: 56px 0; }
+  section h2 { font-size: 28px; }
+  .features { grid-template-columns: 1fr; }
+  .tools { grid-template-columns: 1fr; }
+  .status-row { grid-template-columns: repeat(2, 1fr); }
+  .privacy { padding: 24px; }
+  .nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="brand">Hypha</a>
+    <nav class="nav">
+      <a href="#what">What it does</a>
+      <a href="#tools">Tools</a>
+      <a href="#install">Install</a>
+      <a href="#privacy">Privacy</a>
+      <a href="https://github.com/nalediym/hypha">GitHub →</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <h1>Person OS for your <em>static exports</em>.</h1>
+    <p class="tagline">A local-first personal &amp; org knowledge-graph library. Ingests Gmail mboxes, Drive folders, and other archive exports into a typed bitemporal graph. Agents navigate it over MCP.</p>
+    <div class="ctas">
+      <a href="https://github.com/nalediym/hypha" class="btn btn-primary">View on GitHub →</a>
+      <a href="#install" class="btn btn-secondary">Try it locally</a>
+    </div>
+    <div class="meta">
+      <span><strong>v0.1.0-alpha</strong></span><span>·</span>
+      <span>Apache 2.0</span><span>·</span>
+      <span>27 tests passing</span><span>·</span>
+      <span>TypeScript / Bun</span>
+    </div>
+  </div>
+</section>
+
+<section id="what">
+  <div class="container">
+    <h2>What it does</h2>
+    <p class="lede">Three primitives, one unifying bet: <em>the archive is the source of truth because logins rot</em>.</p>
+    <div class="features">
+      <div class="feature">
+        <div class="label">01 · Ingest</div>
+        <h3>Static-exports-first</h3>
+        <p>Gmail mbox archives, Google Drive folders, and (soon) Slack, Notion, and Microsoft 365 exports.</p>
+        <p>Not live APIs. The archive outlives the login.</p>
+      </div>
+      <div class="feature">
+        <div class="label">02 · Model</div>
+        <h3>Typed temporal graph</h3>
+        <p>Two primitives — <code>Node</code> and <code>Edge</code> with open <code>kind</code> strings.</p>
+        <p>Bitemporal from day one (<code>tx_created</code>, <code>tx_invalidated</code>, <code>valid_from</code>, <code>valid_to</code>) with provenance on every record.</p>
+      </div>
+      <div class="feature">
+        <div class="label">03 · Surface</div>
+        <h3>MCP-native</h3>
+        <p>Seven intent-shaped tools your agent can call from Claude Desktop, Cursor, or any MCP client.</p>
+        <p>Each return carries inline provenance — never &ldquo;the LLM made it up.&rdquo;</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tools" style="background: var(--bg-alt);">
+  <div class="container">
+    <h2>The MCP surface</h2>
+    <p class="lede">A small, intent-shaped tool set. Six tools for navigating, one for writing — all returning structured content with cited sources.</p>
+    <div class="tools">
+      <div class="tool"><code>search</code><span class="desc">FTS5 + filter over the graph (text, kinds, min_confidence).</span></div>
+      <div class="tool"><code>neighborhood</code><span class="desc">1-3 hop subgraph around a given node.</span></div>
+      <div class="tool"><code>timeline</code><span class="desc">Time-ordered events for a subject or window.</span></div>
+      <div class="tool"><code>why</code><span class="desc">Walk the provenance tree back to ingested leaves.</span></div>
+      <div class="tool"><code>fetch</code><span class="desc">Resolve <code>hypha://node/{id}</code> or <code>hypha://edge/{id}</code> URIs.</span></div>
+      <div class="tool"><code>record</code><span class="desc">Agents write — subject to Cedar policy + idempotency keys.</span></div>
+      <div class="tool"><code>ask</code><span class="desc">NL question → compiled StoreQuery (Claude Haiku + FTS fallback).</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="container">
+    <h2>Try it locally</h2>
+    <p class="lede">Clone, install, ingest your own archive, and serve it to Claude Desktop. No accounts, no API keys (except optional <code>ANTHROPIC_API_KEY</code> for NL queries).</p>
+    <pre class="code-block"><span class="comment"># Clone and install</span>
+<span class="prompt">$</span> git clone https://github.com/nalediym/hypha &amp;&amp; cd hypha
+<span class="prompt">$</span> bun install
+
+<span class="comment"># Ingest a Gmail mbox archive</span>
+<span class="prompt">$</span> bun run hypha ingest gmail-mbox <span class="arg">path/to/archive.mbox</span>
+
+<span class="comment"># Run inferrers — identity resolution, DLP scanning</span>
+<span class="prompt">$</span> bun run hypha infer identity-resolver
+<span class="prompt">$</span> bun run hypha infer dlp-scanner
+
+<span class="comment"># Search the graph</span>
+<span class="prompt">$</span> bun run hypha search <span class="arg">"Dinner plans"</span>
+
+<span class="comment"># Serve over MCP for Claude Desktop / Cursor</span>
+<span class="prompt">$</span> bun run hypha serve</pre>
+  </div>
+</section>
+
+<section id="privacy" style="background: var(--bg-alt);">
+  <div class="container">
+    <h2>Privacy by default</h2>
+    <p class="lede">Hypha runs on your machine. Nothing about your archive leaves it unless you explicitly ask.</p>
+    <div class="privacy">
+      <ul>
+        <li><strong>Stays on your machine.</strong> Ingested data, the SQLite store, identity-resolver clusters, and DLP findings — all written to <code>.hypha/</code> in your project directory.</li>
+        <li><strong>No accounts. No telemetry.</strong> No analytics SDK, no remote logging, no &ldquo;phone home&rdquo; check-ins.</li>
+        <li><strong>Local-first by default.</strong> SQLite + FTS5 + sqlite-vec for embeddings. Cedar policy interface for governance.</li>
+        <li class="warn"><strong>Optional outbound:</strong> the <code>ask</code> tool calls Claude Haiku for NL → StoreQuery compilation when <code>ANTHROPIC_API_KEY</code> is set. Omit the key and it falls back to FTS-only.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Status</h2>
+    <p class="lede">Shipped <code>v0.1.0-alpha</code> on April 22, 2026. Core wired end-to-end; some adapters and the web UI are deferred to future milestones — see the <a href="https://github.com/nalediym/hypha/blob/main/CHANGELOG.md">CHANGELOG</a> for the honest scope.</p>
+    <div class="status-row">
+      <div class="status-cell">
+        <div class="key">Adapters</div>
+        <div class="val">gmail-mbox, gdrive-folder</div>
+      </div>
+      <div class="status-cell">
+        <div class="key">Inferrers</div>
+        <div class="val">identity-resolver, dlp-scanner</div>
+      </div>
+      <div class="status-cell">
+        <div class="key">Surfaces</div>
+        <div class="val">stdio MCP, read-only HTTP</div>
+      </div>
+      <div class="status-cell">
+        <div class="key">Tests</div>
+        <div class="val">27 passing, 1 skipped</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Project</h4>
+        <a href="https://github.com/nalediym/hypha">GitHub repo</a>
+        <a href="https://github.com/nalediym/hypha/releases/tag/v0.1.0-alpha">v0.1.0-alpha release</a>
+        <a href="https://github.com/nalediym/hypha/blob/main/CHANGELOG.md">CHANGELOG</a>
+        <a href="https://github.com/nalediym/hypha/blob/main/LICENSE">LICENSE</a>
+      </div>
+      <div class="footer-col">
+        <h4>Docs</h4>
+        <a href="https://github.com/nalediym/hypha/blob/main/README.md">README</a>
+        <a href="https://nalediym.github.io/posts/dogsheep-for-ai-agents/">Blog: Dogsheep for AI agents</a>
+        <a href="https://github.com/nalediym/hypha/blob/main/CONTRIBUTING.md">Contributing</a>
+        <a href="https://github.com/nalediym/hypha/blob/main/SECURITY.md">Security</a>
+      </div>
+      <div class="footer-col">
+        <h4>Author</h4>
+        <a href="https://github.com/nalediym">@nalediym on GitHub</a>
+        <a href="https://x.com/naledicodes">@naledicodes on X</a>
+        <a href="https://www.linkedin.com/in/naledi-y-kekana">LinkedIn</a>
+        <a href="https://nalediym.github.io">nalediym.github.io</a>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <span>© 2026 Naledi · Apache-2.0 · Hypha is alpha software</span>
+      <span><a href="https://github.com/nalediym/hypha/issues/new">Open an issue</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
