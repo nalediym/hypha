@@ -11,9 +11,9 @@
 export default {
   /** One owner per Hypha instance. Identity-resolver anchors the owner node. */
   owner: {
-    handle: 'naledi',
-    emails: ['naledi@example.com', 'naniikekana@gmail.com'],
-    names: ['Naledi Kekana'],
+    handle: 'your-handle',
+    emails: ['you@example.com', 'you@work.example.com'],
+    names: ['Your Name'],
     org: undefined,
   },
 
