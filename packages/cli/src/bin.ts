@@ -20,7 +20,7 @@ import { exportGraphitiCommand } from './commands/export-graphiti.ts';
 import { importGraphitiCommand } from './commands/import-graphiti.ts';
 import { buildAdapterCommand } from './commands/build-adapter.ts';
 
-const HELP = `hypha — reverse hyperbrowser CLI (v0.1.0-dev)
+const HELP = `hypha — local-first knowledge graph CLI (v0.1.0-dev)
 
 Usage:
   hypha ingest <adapter> <path>              Ingest a source archive.

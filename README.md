@@ -1,6 +1,6 @@
 # Hypha
 
-**Reverse hyperbrowser — Person OS for your static exports.**
+**Person OS for your static exports.**
 
 A local-first personal/org knowledge graph library. Ingests static data exports (Gmail mbox, Google Drive folders, and more) into a typed, temporal, browsable graph that AI agents navigate over MCP like a private website.
 
@@ -30,7 +30,7 @@ If you've ever thought *"my inbox knows the answer, but I can't ask it"* — Hyp
 ## Quick start
 
 ```bash
-git clone https://github.com/naledi/hypha && cd hypha
+git clone https://github.com/nalediym/hypha && cd hypha
 bun install
 
 # Ingest a mbox archive
@@ -77,8 +77,7 @@ Claude sees seven tools: `search`, `neighborhood`, `timeline`, `why`, `fetch`, `
 
 ## Thesis
 
-A **hyperbrowser** gives an AI agent a headless browser on the outward web.
-A **reverse hyperbrowser** does the inverse — it takes *your own* data, normalizes it into a typed temporal graph, and lets agents navigate *inside* it.
+Hypha takes *your own* data — Gmail mboxes, Google Drive folders, takeout exports — normalizes it into a typed temporal graph, and lets AI agents navigate *inside* it over MCP.
 
 The bet: **the archive is the source of truth**. Logins rot. Accounts get deleted. Companies get acquired. Kids leave school districts. But the PowerSchool CSV never does. The Gmail mbox never does. Hypha makes those archives *useful after* the login expires.
 

@@ -1,6 +1,6 @@
 # Dogsheep for AI agents
 
-_A reverse hyperbrowser for your static exports._
+_A local-first knowledge graph for your static exports._
 
 ---
 
@@ -12,13 +12,9 @@ Seven years later, AI agents exist. They have MCP. They can walk graphs. They ca
 
 So I built **Hypha**: _Dogsheep for AI agents._
 
-## The inversion
+## What Hypha is
 
-A **hyperbrowser** — Browserbase, Browserless, Hyperbrowser itself — gives an AI agent a headless browser on the outward web. It surfs, it scrapes, it fills forms.
-
-A **reverse hyperbrowser** does the opposite: it takes *your own* data, normalizes it into a typed temporal graph, and lets an agent navigate *inside* it. The live web becomes the inside of your archives.
-
-> "A hyperbrowser is to the open web what Hypha is to your private archive."
+A local-first library that takes *your own* data, normalizes it into a typed temporal graph, and lets an agent navigate *inside* it over MCP. The agent sees your archive the way Datasette let humans see it — except now an agent can walk the graph, cite sources, and do everything Datasette's UI did, but for AI.
 
 ## Why the archive, not the API?
 
@@ -103,7 +99,7 @@ This project stands on the shoulders of others. [Dogsheep](https://dogsheep.gith
 ## Try it
 
 ```bash
-git clone https://github.com/naledi/hypha && cd hypha
+git clone https://github.com/nalediym/hypha && cd hypha
 bun install
 bun run hypha ingest gmail-mbox your-archive.mbox
 bun run hypha infer identity-resolver

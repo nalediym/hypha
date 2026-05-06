@@ -2,21 +2,21 @@
   "name": "hypha",
   "version": "0.1.0-dev",
   "private": true,
-  "description": "Reverse hyperbrowser — Person OS for your static exports. A local-first personal/org knowledge graph library, agent-navigable via MCP.",
+  "description": "Person OS for your static exports — a local-first personal/org knowledge graph library, agent-navigable via MCP.",
   "type": "module",
   "license": "Apache-2.0",
   "author": "Naledi <naniikekana@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/naledi/hypha.git"
+    "url": "https://github.com/nalediym/hypha.git"
   },
-  "homepage": "https://github.com/naledi/hypha",
+  "homepage": "https://github.com/nalediym/hypha",
   "keywords": [
     "knowledge-graph",
     "personal-data",
     "mcp",
     "local-first",
-    "reverse-hyperbrowser",
+    "person-os",
     "agent-memory",
     "bitemporal"
   ],
